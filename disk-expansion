@@ -78,5 +78,109 @@ df -hT
 
 8. verify with 'df -h'
 
+===================================parted============================
+  960  cat /etc/redhat-release
+  961  vxdisk free
+  962  vdisk free
+  963  cd /ds5621new
+  964  mkdir -R ds5621new
+  965  man mkdir
+  966  mkdir -p /ds5621new
+  967  cd ds5621new
+  968  ls
+  969  cd /
+  970  cd ds5621new
+  971  ls
+  972  cd
+  973  fdisk -l
+  974  for host in `ls /sys/class/scsi_host`; do echo "Scanning $host...Completed"; echo "- - -" > /sys/class/scsi_host/$host/scan; done
+  975  fdisk -l
+  976  man partprobe
+  977  partprobe -s
+  978  fdisk -l
+  979  df -h
+  980  cat /etc/fstab
+  981  cat /etc/redhat-release
+  982  df -hT
+  983  df -hT | grep ext3
+  984  exit
+  985  fdisk -l
+  986  pvs
+  987  vgs
+  988  lvs
+  989  vxdisk list
+  990  vxdg free
+  991  parted /dev/sdc
+  992  fdisk -l /dev/sdc
+  993  ls -al /dev/disk/by-path
+  994  fdisk -l
+  995  for host in `ls /sys/class/scsi_host`; do echo "Scanning $host...Completed"; echo "- - -" > /sys/class/scsi_host/$host/scan; done
+  996  fdisk -l /dev/sdc
+  997  partprobe /dev/sdc
+  998  fdisk -l /dev/sdc
+  999  fdisk -l
+ 1000  date
+ 1001  df -PTh
+ 1002  lsblk
+ 1003  lsblk
+ 1004  fdisk -l
+ 1005  cat /etc/fstab
+ 1006  lsblk
+ 1007  fdisk -l
+ 1008  history
+
+parted /dev/sdd
+
+ls -al /dev/disk/by-path
+
+
+
+
+for host in `ls /sys/class/scsi_host`; do echo "Scanning $host...Completed"; echo "- - -" > /sys/class/scsi_host/$host/scan; done
+
+  833  partprobe -s
+
+  834  disk -l
+
+  835  disk -l
+
+  836  fdisk -l
+
+  837  pvcreate  /dev/sdf
+
+  838  pvs
+
+  839  vgcreate vg_ds5621new /dev/sdf
+
+  840  vgs
+
+  841  lvcreate -l +100%FREE -n lv_ds5621new vg_ds5621new
+
+  842  lvs
+
+  843  mkfs.ext3 /dev/vg_ds5621new/lv_ds5621new
+
+  844  vi /etc/fstab
+
+  845  mount -a
+
+  846  df -PTh
+
+  847  df -PTh /ds5621new
+
+  848  partprobe -s
+
+  849  exit
+
+  850  df -Ph
+
+  851  df -PhT
+
+  852  fdisk -l
+
+  853  cat /etc/redhat-release
+
+for i in $(cat cvrhosts); do sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$i" 'echo "$(hostname -f),$(df -i / | awk '\''NR==2 {print $5}'\'')"' ; done | sort -t, -k2 -nr -k2.1,2.2
+
 
 
