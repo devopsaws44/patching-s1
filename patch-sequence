@@ -1,0 +1,186 @@
+Patching Sequence:
+ 
+1.Reboot all servers to ensure a clean state before beginning any updates.
+ 
+2. Pull pre-validation reports to capture the current configuration, OS details.
+ 
+3. Install VMware Tools on all servers running OS 6 to ensure compatibility and enhance VM performance.
+ 
+4. Pull the VMware Tools version report to confirm that the installation was successful and the correct version is installed.
+ 
+5. Reboot all OS 6 servers to apply the VMware Tools updates completely.
+ 
+6. Pull full pre-validation reports again post-VMware reboot to verify that the environment is stable and consistent before patching.
+ 
+7. Patch all servers in 2–3 batches, depending on server count.
+ 
+8. Reboot all patched servers to apply updates and finalize the patching process.
+ 
+9. Pull post-validation reports to confirm that patching was successful for kernel version and latest installed package date.
+
+
+
+FI- All script, repos, vmware tool, etc are all in /root/patch folder
+
+Prework before patching:
+1.
+# Copy vmwaretool to OS 6 /tmp 
+##VMware Tools copy to remote: 
+for i in `cat servers`;do echo “############## $i###############”;sudo scp -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 ./VMwareTools-10.3.26-22085142.tar.gz  $i:/tmp/ ;done
+## VMware tool install
+sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -l root -A -i "nohup /usr/local/sbin/autopatch.sh -c0 -T auto -O none -S2 -o /tmp/VMwareTools-10.3.26-22085142.tar.gz"
+## VMware tool validation
+for i in `cat servers`;do echo “############## $i###############”;sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 $i 'rm -rf /tmp/vmware* /tmp/VM*;vmware-toolbox-cmd -v';done
+
+2. For Non-ansible copy the latest repo and move old repo. 
+sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -P -I< moverepos-  Removed
+Non-Ansible Servers repo copy from source to remote- 
+for i in `cat servers`;do echo “############## $i###############”;sudo scp -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 /root/patch/nonansible_repos/<repo name>/*.repo $i:/etc/yum.repos.d/;done
+
+3. Ensure disk utilization is 90% or below.
+
+Patch and validate:
+Run autopatch to update remote hosts-
+sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -l root -A -i "nohup /usr/local/sbin/autopatch.sh -v0 -c0 -T auto -O none -S3`</dev/null` >nohup.out 2>&1 &"
+
+Validate:
+sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -P -I<validation >result.csv
+cat result.csv | grep -i valid | sed -e "s/: b'/,/g" | sed -e 's/: b"/,/g'
+
+For manual patch, if autopatch fails for some reason:
+yum --disablerepo='*' --enablerepo='cdk-currentsnap-*,cdk-epel-base,ap-current_snap-preprod.repo' check-update  ## update check
+yum --disablerepo='*' --enablerepo='cdk-currentsnap-*,cdk-epel-base,ap-current_snap-preprod.repo' update -y  ## update 
+
+For mass reboot and uptime check:
+for i in `cat servers`;do echo “############## $i###############”;sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 $i "reboot";done
+for i in `cat servers`;do echo “############## $i###############”;sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 $i uptime;done 
+
+===============
+1. Check and remove the cortex entry from fstab - if any
+2. Do a final check on disk usage. Should be 90% or less on root.
+3. reboot all server for sanitization check.
+4. Update VMware tool against OS 6.
+5. pull VMware tool report then reboot them.
+6. Pull  a pre-validation report
+7. Time to patch all the servers-
+      (a). Ansibles
+      (b). Non-Ansibles
+8. Pull a post-validation report
+======================== 
+ 
+remove the whole vmwate tool in server
+mount /dev/cdrom /mnt;cp /mnt/VMwareTools-10.xxxx.tar.gz /tmp/
+
+cd /tmp; tar -xzf VMwareTools-10.3.xxxxtar.gz; cd vmware-tools-distrib; ./vmware-install.pl -d;umount /dev/cdrom
+ 
+ 
+ 
+ rm -rf /etc/vmware-tools
+
+ rm -rf /usr/lib/vmware-tools
+
+rm -rf /usr/lib/vmware*
+
+rm -rf /usr/bin/vmware*
+
+rm -rf /usr/sbin/vmware*
+
+rm -rf /usr/share/doc/vmware-tools*
+
+ rm -rf /var/run/vmware-tools
+
+rm -rf /var/lib/vmware-tools
+
+rm -rf /vmware-tools-distrib
+
+ ./vmware-install.pl
+
+to check the root disk
+
+ #for server in $(cat serverlist); do echo -n "$server: "; ssh -o BatchMode=yes -o ConnectTimeout=5 $server "df -h / | awk 'NR==2'" 2>/dev/null; done
+
+ vmware-toolbox-cmd -v
+
+
+
+  
+ 
+ 
+ 
+
+for i in `cat servers`; do echo "########## $i ###########"; sudo scp -q -o StrictHostKeyChecking=no /tmp/Cortex_Installer.tar3.gz $i:/tmp/ ;done
+
+sudo pssh  -o StrictHostKeyChecking=no  -o ConnectionTimeout=7  -o PasswordAuthentication=no -h hosts -P -I < agentinstall.sh > output
+
+for i in `cat servers`; do echo "########## $i ###########"; sudo ssh -o StrictHostKeyChecking=no $i 'rpm -qa | grep cortex-agent';done
+
+
+
+
+
+
+#VMware tool patching script.
+for i in `cat servers`;do echo “############## $i###############”;sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 $i vmware-toolbox-cmd -v;done
+ 
+sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -l root -A -i "nohup /usr/local/sbin/autopatch.sh -c0 -T auto -O none -S2 -o /tmp/VMwareTools-10.3.26-22085142.tar.gz"
+ 
+ 
+ 
+ ========
+ Do the vmwaretool update for OS 6
+ 
+ 
+#for i in `cat servers`;do echo “############## $i###############”;sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 $i vmware-toolbox-cmd -v;done
+ 
+#sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -l root -A -i "nohup /usr/local/sbin/autopatch.sh -c0 -T auto -O none -S2 -o /tmp/VMwareTools-10.3.26-22085142.tar.gz"
+
+
+to reboot the multiple servers 
+#for i in `cat servers`;do echo “############## $i###############”;sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 $i "reboot";done
+ 
+2. Do the DBs patching...
+ 
+sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -l root -A -i "nohup /usr/local/sbin/autopatch.sh -v0 -c0 -T auto -O none -S3`</dev/null` >nohup.out 2>&1 &"
+ 
+ #manully patch
+yum --disablerepo='*' --enablerepo='cdk-currentsnap-*,cdk-epel-base,ap-current_snap-preprod.repo' check-update   ##check-update
+ 
+
+#run automatch
+ 
+/usr/local/sbin/autopatch.sh -c0 -T auto -O none -S3
+ 
+#post patch validation 
+#sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h servers -P -I< postpatch_validation >result.csv
+
+cat result.csv | grep -i valid| sed -e "s/: b'/,/g" | sed -e 's/: b"/,/g'
+
+=============
+Fetch server usage % in descending order:
+#for i in $(cat hostlist); do sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$i" 'echo "$(hostname -f),$(df -h / | awk '\''NR==2 {print $5}'\'')"' ; done | sort -t, -k2 -nr -k2.1,2.2
+#for i in $(cat servers); do sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$i" 'echo "$(hostname -f),$(df -P / | awk '\''NR==2 {print $5}'\'')"' ; done | sort -t, -k2 -nr
+
+to check repos copy or not 
+#for i in $(cat hostlist); do sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$i" 'echo -n "$(hostname -f)," && grep baseurl /etc/yum.repos.d/cdk-base.repo | grep -oP "\d{4}-\d{2}-\d{2}-(FINALSNAP|SNAPSHOT)" | sort -u'; done
+
+to copy the repos
+#for i in $(cat hostlist); do echo "########## $i ###########"; sudo ssh -o StrictHostKeyChecking=no $i "mkdir -p /etc/yum.repos.d/old && mv -f /etc/yum.repos.d/*.repo /etc/yum.repos.d/old/ 2>/dev/null"; sudo scp -o StrictHostKeyChecking=no ./*.repo $i:/etc/yum.repos.d/; done
+
+ 
+ 
+ 
+to move the Vmware tool 
+#for i in $(cat hostlist); do echo "########## $i ###########"; sudo scp -o StrictHostKeyChecking=no ./VMwareTools-10.3.26-22085142.tar.gz $i:/tmp/; done
+
+
+to check the baseurl on .repos
+ 
+#for i in $(cat hostlist); do sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$i" 'echo -n "$(hostname -f)," && grep baseurl /etc/yum.repos.d/cdk-base.repo /etc/yum.repos.d/oul.repo 2>/dev/null | grep -oP "\d{4}-\d{2}-\d{2}-(FINALSNAP|SNAPSHOT)" | sort -u'; done
+
+ 
+
+ 
+to check the vmware tool moved or not
+ 
+for i in $(cat hostlist); do echo "########## $i ###########"; sudo ssh -o StrictHostKeyChecking=no "$i" 'if [ -f /tmp/VMwareTools-10.3.26-22085142.tar.gz ]; then echo "VMwareTools-10.3.26-22085142.tar.gz File exists"; else echo "VMwareTools-10.3.26-22085142.tar.gz File not found"; fi'; done
+ 
