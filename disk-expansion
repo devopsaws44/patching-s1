@@ -1,0 +1,82 @@
+go to the vcenter search the server and click the action and select the 
+xfs_growfs /mount/point
+lvresize -l +100%FREE /dev/VG_NAME/LV_NAME
+for host in `ls /sys/class/scsi_host`; do echo "Scanning $host...Completed"; echo "- - -" > /sys/class/scsi_host/$host/scan; done
+
+Need to add 300 GB space in the mount point "/opt/data/mount1" of 3 mongoDB servers ("c03pfocvr680.dswh.ds.adp.com", "c03pfocvr426.dswh.ds.adp  "c03pfocvr703.dswh.ds.adp.com")  of CVR as utilization crossed 80% 
+
+echo "- - -" > /sys/class/scsi_host/host0/scan
+echo "- - -" > /sys/class/scsi_host/host0/scan
+echo "- - -" > /sys/class/scsi_host/host1/scan
+echo "- - -" > /sys/class/s,csi_host/host2/scan
+
+fdisk /dev/sdf
+ enter all default setting
+ L-it will show all type of volumes
+ volume type LVM 8e
+ partprobs -s
+w ->for save and exit
+
+
+
+
+after entering 
+lsblk
+
+first we need to create Pvs
+pvcreate /dev/sdf1
+vgextend vg1 /dev/sdf1
+lvextend -l +100%FREE /dev/vg1/lv1
+
+xfs_growfs /dev/vg1/lv1
+resize2fs /dev/mapper/vg.lc-lv-name
+
+
+
+to check the lun number.
+# udevadm info -q all -n /dev/sdab |grep SERIAL
+
+
+
+df -hT
+ 3024  2024-02-06 08:16:58 fdisk /dev/xvdp
+ 3025  2024-02-06 08:17:18 partprobe -s
+ 3026  2024-02-06 08:17:22 df -h
+ 3027  2024-02-06 08:17:50 pvcreate /dev/xvdp1
+ 3028  2024-02-06 08:17:54 pvs
+ 3029  2024-02-06 08:18:17 vgextend vg.pulp /dev/xvdp1
+ 3030  2024-02-06 08:18:25  lvextend -l+100%FREE /dev/vg.pulp/lv.pulp
+ 3031  2024-02-06 08:18:28 lvs
+ 3032  2024-02-06 08:18:49 xfs_growfs /dev/vg.pulp/lv.pulp
+ 3033  2024-02-06 08:18:52 df -hT
+ 3034  2024-02-06 08:21:47 lsblk
+ 3035  2024-02-06 08:22:53 fdisk /dev/xvdq
+ 3036  2024-02-06 08:23:17 partprobe -s
+ 3037  2024-02-06 08:23:23 lsblk
+ 3038  2024-02-06 08:23:34 pvcreate /dev/xvdq1
+ 3039  2024-02-06 08:23:42 vgs
+ 3040  2024-02-06 08:23:56 vgextend vg0 /dev/xvdq1
+ 3041  2024-02-06 08:24:11  lvextend -l+100%FREE /dev/vg0/root
+ 3042  2024-02-06 08:24:15 df -hT
+ 3043  2024-02-06 08:24:45 resize2fs /dev/mapper/vg0-root
+ 3044  2024-02-06 08:25:00 df -hT
+
+
+1. Add the required disk from allocated LUN at VM level by Adding New Hard disk.
+
+2. Scan the newly added Hardisk : "for host in `ls /sys/class/scsi_host/`;do echo "- - -" >/sys/class/scsi_host/${host}/scan; done"
+
+3. Verify the newly scanned disk : 'lsblk'
+
+4. Configure the disk using LVM:  (PV;VG;LV)
+
+5. Create requested folder to mount newly created drives : ‘mkdir /<foldername>’
+
+6. Add entries into /etc/fstab to make mount as permanent : ‘vi /etc/fstab’
+
+7. mount the desired directories with command : ‘mount -a’
+
+8. verify with 'df -h'
+
+
+
