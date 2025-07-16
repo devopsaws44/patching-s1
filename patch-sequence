@@ -18,10 +18,6 @@ Patching Sequence:
  
 9. Pull post-validation reports to confirm that patching was successful for kernel version and latest installed package date.
 
-
-
-FI- All script, repos, vmware tool, etc are all in /root/patch folder
-
 Prework before patching:
 1.
 # Copy vmwaretool to OS 6 /tmp 
@@ -72,8 +68,6 @@ remove the whole vmwate tool in server
 mount /dev/cdrom /mnt;cp /mnt/VMwareTools-10.xxxx.tar.gz /tmp/
 
 cd /tmp; tar -xzf VMwareTools-10.3.xxxxtar.gz; cd vmware-tools-distrib; ./vmware-install.pl -d;umount /dev/cdrom
- 
- 
  
  rm -rf /etc/vmware-tools
 
