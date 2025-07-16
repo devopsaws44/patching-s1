@@ -3,7 +3,6 @@ xfs_growfs /mount/point
 lvresize -l +100%FREE /dev/VG_NAME/LV_NAME
 for host in `ls /sys/class/scsi_host`; do echo "Scanning $host...Completed"; echo "- - -" > /sys/class/scsi_host/$host/scan; done
 
-Need to add 300 GB space in the mount point "/opt/data/mount1" of 3 mongoDB servers ("c03pfocvr680.dswh.ds.adp.com", "c03pfocvr426.dswh.ds.adp  "c03pfocvr703.dswh.ds.adp.com")  of CVR as utilization crossed 80% 
 
 echo "- - -" > /sys/class/scsi_host/host0/scan
 echo "- - -" > /sys/class/scsi_host/host0/scan
