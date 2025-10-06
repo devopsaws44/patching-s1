@@ -1,0 +1,276 @@
+------------------NFS-------------------------------
+server1:/ord_prod_nethome         /nfs/nethome            nfs     _netdev,rw,bg,hard,rsize=32768,wsize=32768,vers=3,nointr,timeo=600,proto=tcp,suid    0 0
+srver2:/ord_archivelog           /nfs/archivelogs        nfs     _netdev,nosuid,hard,bg,intr,nfsvers=3,tcp,timeo=600,retrans=2,rsize=32768,wsize=32768        0 0
+--------------------------------Samba----------------------
+//idnafs.cdk.com/EnterpriseIntegration    /mnt/EnterpriseIntegration    cifs    credentials=/root/idnafs.cred,rw,user,exec,uid=1000,gid=1000
+
+
+===================================zipping multiple file month ------------------------
+for i in `ls -ltr | grep "Oct" | awk '{print $9}'`; do mv $i* /opt/data/tomcat/tomcat-8/logs/salesod_files_backup/response_topartner; done
+
+
+for i in `ls -ltr | grep -e "Nov  1" -e "Nov  2" -e "Nov  3" -e "Nov  4"| awk '{print $9}'`; do mv $i* /opt/data/tomcat/tomcat-8/logs/salesod_files_backup/response_topartner; done
+
+
+-----------------------------shell script------------------------------
+#!/bin/bash->
+#!/bin/sh->
+#!/bin/ksh->
+#!/bin/dash->
+find /var/log/ -type -f -exec du -sch {} + | sort -rh | head -10
+
+
+find /opt/data -type f -exec du -sch {} + | sort -rh | heas -10
+
+==============================
+netstat -tulnp | grep 80
+ss -tulnp | grep 80
+
+===============
+how to allow thr traffic on port 808
+
+firewall-cmd --zone=public --add-port=8080/tcp
+
+
+===========================
+file backup script
+
+#!/bin/bash
+
+backup_dir="/opt/data/backup"
+source_dir="/var/lib/web/"
+
+mkdir -p "$backup_dir"  # Ensure backup directory exists
+
+tar -czf "$backup_dir/backup_$(date +%Y%m%d_%H%M%S).tar.gz" -C "$source_dir"
+
+=========================================================================
+system monitering script
+#!/bin/bash
+threshold=90
+cpu_usage=$(top-bn1 | grep "Cpu9s)" | awk '{print $2}' | cut-d. -f1)
+if ["$cpu_usage" -gt "$threshold"|; then
+echo "high CPU usage detected:
+
+$cpu_usage%"
+#add alert/notification logic here
+file
+
+=======================================
+
+#!/bin/bash
+username="bash"
+if id "$username" &>/dev/null;then
+echo "User $username already exits."
+
+echo " premkumar"
+
+set -x # debug mod
+set -e # exit the script when there is an error recognize
+
+set -o
+#!/bin/bash
+df -h
+
+free -m
+
+ps -ef | grep amazon
+
+
+ps  -ef | grep amazon | awk -f" " '{print$2}'
+
+for i in 
+
+sh -x hello.sh
+for i in $(cat hostlist); do if ping -c 1 $i &> /dev/null; then echo "$i is ok"; else echo "$i is UNREACHABLE"; fi; done
+ 
+ 
+for i in `cat server-dns-set2`;do echo “############## $i###############”;sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 $i systemctl is-active named-chroot;done
+
+
+for i in $(cat server_dns-set2); do sudo ssh -o StrictHostKeyChecking=no $i "echo -n \"\$(hostname -f): \"; uptime | awk -F', ' '{print \$1}' | cut -d ' ' -f 4-"; done
+
+
+--check server health----------
+
+for i in `cat serverstest.txt`; do ssh $i "hostname;date;echo'';uptime;echo '';free -h;echo '';lsblk;echo '';df -PTh;echo '';lscpu" >>out2.txt ; done
+
+for i in `cat serverlist`; do ssh $i "hostname;date;echo '';free -h;echo'';df -PTh;echo '';lacpu" >>outpuy.txt; done
+===================================================================
+
+#!/bin/bash
+ 
+# Define the input file and the column number to extract
+INPUT_FILE="test.txt"
+COLUMN_NUMBER=1  # Change this to the column number you want to extract
+ 
+# Extract values from the specified column and store them in an array
+VALUES=($(awk -v col=$COLUMN_NUMBER '{print $col}' $INPUT_FILE))
+ 
+# Iterate over the array and find files with matching names
+for VALUE in "${VALUES[@]}"; do
+    echo "Searching for files with name: $VALUE"
+ 
+    # Find the file with the matching name
+    file=$(grep -r "db.$VALUE" /home/deranguh/DNS/dns/var/named/sm/ext/ | grep -v "sm.ext.zones" | head -n 1 | cut -d ":" -f1)
+ 
+    if [ -n "$file" ]; then
+        echo "File found: $file"
+ 
+        # Append data from the input file to the found file
+        awk -v value="$VALUE" '$1 == value {print substr($0, length(value) + 2)}' "$INPUT_FILE" >> "$file"
+ 
+        # Output the first column and the output file name
+        echo "First Column (used as filename): $VALUE"
+        echo "Data appended to: $file"
+    else
+        echo "No matching file found for: $VALUE"
+    fi
+done 
+
+
+#!/bin/bash
+##############################################################
+# Find the top 25 files (in size) in a filesystem
+##############################################################
+TMP_FILE1=/tmp/top25files.tmp1
+TMP_FILE2=/tmp/top25files.tmp2
+echo "Full path of the directory (e.g. /db25):"
+read DIR
+echo "The top 25 files in $DIR:"
+echo "============================================="
+echo " user     Size        date      location "
+echo "=============================================" 
+du -kxa $DIR | sort -k 1rn,1 > $TMP_FILE1
+exec 5< $TMP_FILE1
+COUNT=1
+while [ $COUNT -le 25 ]
+do
+  if  read -u5 SIZE FILE
+  then
+    if [ -f $FILE ]
+    then
+      (( COUNT = COUNT +1 ))
+      ls -o $FILE | cut -b 14- | tee -a $TMP_FILE2
+    fi
+  else
+    COUNT=26
+  fi
+done
+exec 5<&-
+rm $TMP_FILE1
+rm $TMP_FILE2
+
+
+=====================================
+for i in $(cat hostlist); do ssh "$i" "hostname; date; echo ''; df -PTh > /home/premkumt/outtest04DB.txt"; done
+
+
+grep -i "cups" /var/log/messages
+# or on systems with journalctl:
+journalctl -u cups
+
+
+for i in $(cat hostlist); do ssh "$i" "hostname; date; echo ''; df -PTh > /home/premkumt/outtest04DB.txt"; don
+
+#!/bin/bash
+ 
+# Define the server list file
+SERVER_LIST="servers"
+ 
+# Function to run autopatch
+run_autopatch() {
+    echo "Running autopatch on remote hosts..."
+    sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h "$SERVER_LIST" -l root -A -i "nohup /usr/local/sbin/autopatch.sh -v0 -c0 -T auto -O none -S3 < /dev/null > nohup.out 2>&1 &"
+}
+ 
+# Function to validate the patch
+validate_patch() {
+    echo "Validating patches..."
+    sudo pssh -O StrictHostKeyChecking=no -oConnectTimeout=10 -oPasswordAuthentication=no -h "$SERVER_LIST" -P -I "<validation>" > result.csv
+    cat result.csv | grep -i valid | sed -e "s/: b'/,/g" | sed -e 's/: b"/,/g'
+}
+ 
+# Function for manual patching if autopatch fails
+manual_patch() {
+    echo "Running manual patching..."
+    yum --disablerepo='*' --enablerepo='cdk-currentsnap-*,cdk-epel-base,ap-current_snap-preprod.repo' check-update
+    yum --disablerepo='*' --enablerepo='cdk-currentsnap-*,cdk-epel-base,ap-current_snap-preprod.repo' update -y
+}
+ 
+# Function to reboot servers and check uptime
+reboot_and_check_uptime() {
+    for i in $(cat "$SERVER_LIST"); do
+        echo "############## $i ###############"
+        sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$i" "reboot"
+    done
+ 
+    for i in $(cat "$SERVER_LIST"); do
+        echo "############## $i ###############"
+        sudo ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$i" uptime
+    done
+}
+ 
+# Main script execution
+run_autopatch
+validate_patch
+ 
+ reboot_and check_uptime() {
+  for i in $(cat "$serverList");do
+  echo "################## $i ##############"
+  sudo ssh -q -o strickhostkeychecking=no -o connecttimeout=10 "$i" "reboot"
+  sudo ssh -q -o "$i" uptime
+# Uncomment the following line if you want to run manual patching if autopatch fails
+# manual_patch
+ 
+reboot_and_check_uptime
+
+===============
+anaylizing the logs certain program, monitering the services and programs.
+
+application log and system log
+
+find . -name *.log -mtime -1 // it will help to check is there any update happend 1 day before
+
+touch logsanalyse.sh
+
+#!/bin/bash
+find . -name *.log -mtime -1
+
+grep "error" application.log
+grep -c "fatal" system.log
+grep -c " error" application.log
+grep -c "CRITICAL" system.log
+grep " CRITICAL" system.log
+
+
+========================== logrotation------------------------
+/var/log/newrelic-infra/newrelic-infra.log {
+    weekly
+    rotate 3
+    size 500M
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 644 root root
+    postrotate
+        systemctl restart newrelic-infra >/dev/null 2>&1 || true    ## for Os 6 and below make it service newrelic-infra restart  >/dev/null 2>&1 || true
+    endscript
+}
+
+/opt/apache-tomcat-8.0.37/logs/catalina.out {
+  copytruncate
+  compress
+  daily
+  dateext
+  missingok
+  rotate 7
+  size 5M
+  postrotate
+    # Delete files older than 30 days
+    /usr/bin/find /opt/apache-tomcat-8.0.37/logs -type f -mmin +43200 -delete
+  endscript
+}
+
+
