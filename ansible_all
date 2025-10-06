@@ -1,0 +1,54 @@
+=================to install cortext antivirous====================
+
+---
+- name: Manage /etc/fstab entry for CDK Cortex ISO
+  hosts: all
+  become: yes
+  vars:
+    target_line: "/tmp/cdkcortex-v3.iso"
+    fstab_path: "/etc/fstab"
+    backup_path: "/etc/fstab.bak"
+
+  tasks:
+    - name: Check if line exists in fstab
+      ansible.builtin.slurp:
+        src: "{{ fstab_path }}"
+      register: fstab_content
+      changed_when: false
+
+    - name: Decode fstab content
+      ansible.builtin.set_fact:
+        file_content: "{{ fstab_content.content | b64decode }}"
+      changed_when: false
+
+    - name: Check if target line exists (commented or not)
+      ansible.builtin.set_fact:
+        line_exists: "{{ target_line in file_content }}"
+        line_commented: "{{ '# ' + target_line in file_content or '#' + target_line in file_content or '#    ' + target_line in file_content }}"
+      changed_when: false
+
+    - name: Create backup of fstab
+      ansible.builtin.copy:
+        src: "{{ fstab_path }}"
+        dest: "{{ backup_path }}"
+        remote_src: yes
+      when: line_exists and not line_commented
+
+    - name: Comment out the target line if needed
+      ansible.builtin.lineinfile:
+        path: "{{ fstab_path }}"
+        regexp: "^(\\s*){{ target_line }}"
+        line: "# \\1{{ target_line }}"
+        backrefs: yes
+      when: line_exists and not line_commented
+      register: line_changed
+
+    - name: Show results
+      ansible.builtin.debug:
+        msg: |
+          File: {{ fstab_path }}
+          Target line: {{ target_line }}
+          Line exists: {{ line_exists }}
+          Already commented: {{ line_commented }}
+          Made changes: {{ line_changed is defined and line_changed.changed }}
+          Backup created at: {{ backup_path if (line_exists and not line_commented) else 'No backup needed' }}
