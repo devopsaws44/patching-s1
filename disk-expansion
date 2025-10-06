@@ -1,3 +1,14 @@
+ps aux --sort -rss  | more
+
+grep -i "vm.nr_hugepages" /etc/sysctl.d/vm.nr_hugepages.conf
+
+#TO check high cpu=====
+ps -eo pid,user,ppid,cmd,%mem,%cpu --sort=-%cpu | less
+#to check high memory=====
+ps -eo pid,user,ppid,cmd,%mem,%cpu --sort=-%mem | head
+
+
+
 go to the vcenter search the server and click the action and select the 
 xfs_growfs /mount/point
 lvresize -l +100%FREE /dev/VG_NAME/LV_NAME
@@ -78,6 +89,9 @@ df -hT
 8. verify with 'df -h'
 
 ===================================parted============================
+https://www.tecmint.com/add-disk-larger-than-2tb-to-an-existing-linux/
+
+
   960  cat /etc/redhat-release
   961  vxdisk free
   962  vdisk free
